@@ -1,21 +1,27 @@
 import Phaser from 'phaser';
 import { Client } from 'boardgame.io/client';
-// import TTTGame from './scenes/TTTGame';
+import { SocketIO } from 'boardgame.io/multiplayer';
+
+const playerID = 0;
 
 const TTT = {
   setup: () => ({
     cells: Array(9).fill(null),
   }),
+  turn: {
+    moveLimit: 1,
+  },
   moves: {
     clickCell: (G, ctx, id) => {
       G.cells[id] = ctx.currentPlayer;
-      console.log('fired');
     }
   }
 };
 
 const bgClient = Client({
   game: TTT,
+  multiplayer: SocketIO({ server: 'localhost:8000' }),
+  playerID,
 });
 
 bgClient.start();
@@ -61,7 +67,6 @@ function create() {
     logo.on('pointerup', (pointer) => {
       bgClient.moves.clickCell(idx);
       const state = bgClient.getState();
-      console.log(state.G.cells);
     })
   }
 }
