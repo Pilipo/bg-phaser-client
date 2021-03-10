@@ -28,12 +28,13 @@ bgClient.start();
 
 new Phaser.Game({
   type: Phaser.AUTO,
-  width: 1280,
-  height: 720,
+  width: 500,
+  height: 500,
   scene: {
     preload,
     create
   },
+  backgroundColor: '#ffffff',
   physics: {
     default: 'arcade',
     arcade: {
@@ -43,27 +44,11 @@ new Phaser.Game({
 });
 
 function preload() {
+  this.load.image('board', 'assets/board.png');
+  this.load.image('x', 'assets/x.png');
+  this.load.image('o', 'assets/o.png');
 }
 
 function create() {
-  const coord = [
-    { x: 200, y: 100 },
-    { x: 600, y: 100 },
-    { x: 1000, y: 100 },
-    { x: 200, y: 360 },
-    { x: 600, y: 360 },
-    { x: 1000, y: 360 },
-    { x: 200, y: 620 },
-    { x: 600, y: 620 },
-    { x: 1000, y: 620 },
-  ];
-  for (let idx = 0; idx < 9; idx++) {
-    const logo = this.add.image(coord[idx].x, coord[idx].y, 'logo');
-    logo.setInteractive();
-    logo.setAngle(30);
-    logo.on('pointerup', (pointer) => {
-      bgClient.moves.clickCell(idx);
-      const state = bgClient.getState();
-    })
-  }
+  const bg = this.add.image(250, 250, 'board');
 }
