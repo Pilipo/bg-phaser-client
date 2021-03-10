@@ -40,12 +40,9 @@ new Phaser.Game({
       gravity: { y: 200 }
     }
   },
-  bgClient
 });
 
 function preload() {
-  this.load.setBaseURL('http://labs.phaser.io');
-  this.load.image('logo', 'assets/sprites/phaser3-logo.png');
 }
 
 function create() {
