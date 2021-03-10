@@ -1,8 +1,7 @@
 import Phaser from 'phaser';
-import { Client } from 'boardgame.io/client';
+import { Client, LobbyClient } from 'boardgame.io/client';
 import { SocketIO } from 'boardgame.io/multiplayer';
-
-const playerID = 0;
+import { INVALID_MOVE } from 'boardgame.io/core';
 
 const TTT = {
   setup: () => ({
@@ -13,7 +12,18 @@ const TTT = {
   },
   moves: {
     clickCell: (G, ctx, id) => {
+      if (G.cells[id] !== null) {
+        return INVALID_MOVE;
+      }
       G.cells[id] = ctx.currentPlayer;
+    }
+  },
+  endIf: (G, ctx) => {
+    if (IsVictory(G.cells)) {
+      return { winner: ctx.currentPlayer };
+    }
+    if (IsDraw(G.cells)) {
+      return { draw: true };
     }
   }
 };
@@ -21,7 +31,6 @@ const TTT = {
 const bgClient = Client({
   game: TTT,
   multiplayer: SocketIO({ server: 'localhost:8000' }),
-  playerID,
 });
 
 bgClient.start();
@@ -40,14 +49,14 @@ play.create = function () {
   this.add.image(250, 250, 'board');
   text = this.add.text(600, 10, 'Move the mouse', { font: '16px Courier', fill: '#00ff00' });
   this.input.on('pointerup', function () {
-    console.log({ x: pointer.x, y: pointer.y });
+    // console.log({ x: pointer.x, y: pointer.y });
     const idx = convertPointToIndex({ x: pointer.x, y: pointer.y });
-    console.log(`You click ${idx}`);
+    // console.log(`You clicked ${idx}`);
     bgClient.moves.clickCell(idx);
   })
 }
 
-play.update = function() {
+play.update = function () {
   pointer = this.input.activePointer;
 
   text.setText([
@@ -70,6 +79,61 @@ new Phaser.Game({
   backgroundColor: '#ffffff',
 });
 
+function convertIndexToPoint(idx) {
+  let returnValue = { x: null, y: null };
+  switch (idx) {
+    case 0: {
+      returnValue.x = 65;
+      returnValue.y = 65;
+      break;
+    }
+    case 1: {
+      returnValue.x = 250;
+      returnValue.y = 65;
+      break;
+    }
+    case 2: {
+      returnValue.x = 400;
+      returnValue.y = 65;
+      break;
+    }
+    case 3: {
+      returnValue.x = 65;
+      returnValue.y = 250;
+      break;
+    }
+    case 4: {
+      returnValue.x = 250;
+      returnValue.y = 250;
+      break;
+    }
+    case 5: {
+      returnValue.x = 400;
+      returnValue.y = 250;
+      break;
+    }
+    case 6: {
+      returnValue.x = 65;
+      returnValue.y = 420;
+      break;
+    }
+    case 7: {
+      returnValue.x = 250;
+      returnValue.y = 420;
+      break;
+    }
+    case 8: {
+      returnValue.x = 400;
+      returnValue.y = 420;
+      break;
+    }
+    default:
+      return null;
+      break;
+  }
+  return returnValue;
+}
+
 function convertPointToIndex(point) {
   let x = null;
   let y = null;
@@ -88,4 +152,39 @@ function convertPointToIndex(point) {
     y = 2;
   }
   return (x % 3) + (y * 3);
+}
+
+const subscribe = bgClient.subscribe((state) => {
+  if (!state) return;
+  state.G.cells.forEach((cell, idx) => {
+    if (!cell) return;
+    if (cell === '0') {
+      const point = convertIndexToPoint(idx);
+      play.add.image(point.x, point.y, 'x');
+    } else {
+      const point = convertIndexToPoint(idx);
+      play.add.image(point.x, point.y, 'o');
+    }
+
+    // console.log(`cell ${idx} equals ${cell}`);
+  })
+})
+
+function IsVictory(cells) {
+  const positions = [
+    [0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6],
+    [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]
+  ];
+
+  const isRowComplete = row => {
+    const symbols = row.map(i => cells[i]);
+    return symbols.every(i => i !== null && i === symbols[0]);
+  };
+
+  return positions.map(isRowComplete).some(i => i === true);
+}
+
+// Return true if all `cells` are occupied.
+function IsDraw(cells) {
+  return cells.filter(c => c === null).length === 0;
 }
