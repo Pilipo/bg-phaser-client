@@ -38,6 +38,7 @@ bgClient.start();
 const play = new Phaser.Scene('Play');
 let text;
 let pointer;
+let markers = Array(9).fill(null);
 
 play.preload = function () {
   this.load.image('board', 'assets/board.png');
@@ -49,9 +50,7 @@ play.create = function () {
   this.add.image(250, 250, 'board');
   text = this.add.text(600, 10, 'Move the mouse', { font: '16px Courier', fill: '#00ff00' });
   this.input.on('pointerup', function () {
-    // console.log({ x: pointer.x, y: pointer.y });
     const idx = convertPointToIndex({ x: pointer.x, y: pointer.y });
-    // console.log(`You clicked ${idx}`);
     bgClient.moves.clickCell(idx);
   })
 }
@@ -156,16 +155,23 @@ function convertPointToIndex(point) {
 
 const subscribe = bgClient.subscribe((state) => {
   if (!state) return;
+  markers.forEach((marker) => {
+    if (marker === null) return;
+    marker.destroy();
+  }) 
   state.G.cells.forEach((cell, idx) => {
-    if (!cell) return;
+    if (cell === null) return;
     if (cell === '0') {
       const point = convertIndexToPoint(idx);
-      play.add.image(point.x, point.y, 'x');
+      let marker = play.add.image(point.x, point.y, 'x');
+      marker.angle = Math.random() * 20
+      markers[idx] = marker;
     } else {
       const point = convertIndexToPoint(idx);
-      play.add.image(point.x, point.y, 'o');
+      let marker = play.add.image(point.x, point.y, 'o');
+      marker.angle = Math.random() * 20
+      markers[idx] = marker;
     }
-
     // console.log(`cell ${idx} equals ${cell}`);
   })
 })
