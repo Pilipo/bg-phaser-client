@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "rm -rf ./dist/* && cp -r ./src/assets ./dist/assets/ && parcel index.html --open"
+    "start": "parcel index.html --open",
+    "cleanstart": "rm -rf ./dist/* && cp -r ./src/assets ./dist/assets/ && parcel index.html --open"
   },
   "browserslist": "> 0.4% and not ie 11",
   "keywords": [],
