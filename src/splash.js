@@ -9,10 +9,17 @@ const buildMatchList = (gameTitle) => {
 
   lobbyClient.listMatches(gameTitle)
     .then((data) => {
-      let returnString = ``;
-
-      data.matches.forEach((match, idx) => {
-        returnString += `
+      let returnString = '';
+      if (!data || data.matches.length === 0) {
+        returnString = `<div class="card">
+        <div class="card-body">
+          <h5 class="card-title"></h5>
+          <p class="card-text text-center"> ...no matches found.</p>
+        </div>
+      </div>`;
+      } else {
+        data.matches.forEach((match, idx) => {
+          returnString += `
         <div class="card col-md-3 col-sm-6 m-0">
           <div class="card-body">
             <h5 class="card-title">${match.gameName}</h5>
@@ -50,13 +57,11 @@ const buildMatchList = (gameTitle) => {
           </div>
         </div>  
         `;
-      });
-
-      returnString += `
-      `;
+        });
+      }
 
       $('#matches-in-progress').html(returnString);
-      
+
     })
     .catch(console.error);
 }
@@ -79,7 +84,7 @@ const buildGameList = () => {
     });
 };
 
-function createMatch (event) {
+function createMatch(event) {
   const btn = $(this);
   const gameTitle = btn.attr('data-gameTitle');
   lobbyClient.createMatch(gameTitle, {
@@ -88,7 +93,7 @@ function createMatch (event) {
   buildGameList();
 }
 
-function joinMatch (event) {
+function joinMatch(event) {
   if (playerCreds !== null) return;
   const btn = $(this);
   const matchID = btn.attr('data-matchID');
