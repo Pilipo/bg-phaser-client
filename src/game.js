@@ -2,15 +2,14 @@ import Phaser from 'phaser';
 import { Client, LobbyClient } from 'boardgame.io/client';
 import { SocketIO } from 'boardgame.io/multiplayer';
 import { INVALID_MOVE } from 'boardgame.io/core';
+import GH from './helpers/gameHelper';
 
 const TTT = {
   name: 'TicTacToe',
-  setup: () => ({
-    cells: Array(9).fill(null),
-  }),
-  turn: {
-    moveLimit: 1,
-  },
+  setup: () => ({ cells: Array(9).fill(null) }),
+
+  turn: { moveLimit: 1 },
+
   moves: {
     clickCell: (G, ctx, id) => {
       if (G.cells[id] !== null) {
@@ -19,6 +18,7 @@ const TTT = {
       G.cells[id] = ctx.currentPlayer;
     }
   },
+  
   endIf: (G, ctx) => {
     if (IsVictory(G.cells)) {
       return { winner: ctx.currentPlayer };
@@ -49,7 +49,7 @@ play.create = function () {
   this.add.image(250, 250, 'board');
   text = this.add.text(600, 10, 'Move the mouse', { font: '16px Courier', fill: '#00ff00' });
   this.input.on('pointerup', function () {
-    const idx = convertPointToIndex({ x: pointer.x, y: pointer.y });
+    const idx = GH.convertPointToIndex({ x: pointer.x, y: pointer.y });
     bgClient.moves.clickCell(idx);
   })
 }
@@ -69,9 +69,10 @@ play.update = function () {
   ]);
 }
 
-export const kickoffClient = (playerID) => {
+export const kickoffClient = (playerID, playerCredentials) => {
   if (typeof playerID === 'undefined') throw new Error('playerID undefined');
 
+  bgClient.credentials = playerCredentials;
   bgClient.playerID = playerID;
   bgClient.start();
 
@@ -84,81 +85,6 @@ export const kickoffClient = (playerID) => {
   });
 }
 
-function convertIndexToPoint(idx) {
-  let returnValue = { x: null, y: null };
-  switch (idx) {
-    case 0: {
-      returnValue.x = 65;
-      returnValue.y = 65;
-      break;
-    }
-    case 1: {
-      returnValue.x = 250;
-      returnValue.y = 65;
-      break;
-    }
-    case 2: {
-      returnValue.x = 400;
-      returnValue.y = 65;
-      break;
-    }
-    case 3: {
-      returnValue.x = 65;
-      returnValue.y = 250;
-      break;
-    }
-    case 4: {
-      returnValue.x = 250;
-      returnValue.y = 250;
-      break;
-    }
-    case 5: {
-      returnValue.x = 400;
-      returnValue.y = 250;
-      break;
-    }
-    case 6: {
-      returnValue.x = 65;
-      returnValue.y = 420;
-      break;
-    }
-    case 7: {
-      returnValue.x = 250;
-      returnValue.y = 420;
-      break;
-    }
-    case 8: {
-      returnValue.x = 400;
-      returnValue.y = 420;
-      break;
-    }
-    default:
-      return null;
-      break;
-  }
-  return returnValue;
-}
-
-function convertPointToIndex(point) {
-  let x = null;
-  let y = null;
-  if (point.x < 145) {
-    x = 0;
-  } else if (point.x >= 145 && point.x < 320) {
-    x = 1;
-  } else if (point.x >= 320 && point.x < 500) {
-    x = 2;
-  }
-  if (point.y < 145) {
-    y = 0;
-  } else if (point.y >= 145 && point.y < 355) {
-    y = 1;
-  } else if (point.y >= 355 && point.y < 500) {
-    y = 2;
-  }
-  return (x % 3) + (y * 3);
-}
-
 const subscribe = bgClient.subscribe((state) => {
   if (!state) return;
   markers.forEach((marker) => {
@@ -168,17 +94,16 @@ const subscribe = bgClient.subscribe((state) => {
   state.G.cells.forEach((cell, idx) => {
     if (cell === null) return;
     if (cell === '0') {
-      const point = convertIndexToPoint(idx);
+      const point = GH.convertIndexToPoint(idx);
       let marker = play.add.image(point.x, point.y, 'x');
       marker.angle = Math.random() * 20
       markers[idx] = marker;
     } else {
-      const point = convertIndexToPoint(idx);
+      const point = GH.convertIndexToPoint(idx);
       let marker = play.add.image(point.x, point.y, 'o');
       marker.angle = Math.random() * 20
       markers[idx] = marker;
     }
-    // console.log(`cell ${idx} equals ${cell}`);
   })
 })
 

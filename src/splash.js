@@ -16,7 +16,8 @@ const buildMatchList = (gameTitle) => {
         domString += DH.formatCard();
       } else {
         data.matches.forEach((match) => {
-          domString += DH.formatCard(match.gameName, match.matchID);
+          console.log(match);
+          domString += DH.formatCard(match);
         });
       }
       $('#matches-in-progress').html(domString);
@@ -44,27 +45,33 @@ function createMatch() {
 }
 
 function joinMatch() {
-  if (playerCreds !== null) return;
+  // if (playerCreds !== null) return;
   const btn = $(this);
+  console.log(btn);
   const matchID = btn.attr('data-matchID');
   const playerID = btn.attr('data-playerID');
-  lobbyClient.joinMatch('default', matchID, {
+  const gameName = btn.attr('data-gameName');
+  lobbyClient.joinMatch(gameName, matchID, {
     playerID,
     playerName,
   })
     .then((data) => {
       playerCreds = data.playerCredentials;
+      // localStorage.setItem('sg-playerCredentials', playerCreds);
+      // localStorage.setItem('sg-matchID', matchID);
       buildGameList();
-      kickoffGame(playerID);
+      kickoffClient(playerID, playerCreds);
+      toggleLobby();
     })
 }
 
-const kickoffGame = (playerID) => {
+const toggleLobby = () => {
   $('#lobby').toggle();
-  kickoffClient(playerID);
+  
 }
 
 const init = () => {
+  playerCreds = localStorage.getItem('sg-playerCredentials');
   buildGameList();
   $('body').on('click', 'button.start-match', createMatch);
   $('body').on('click', 'button.join-button', joinMatch);
