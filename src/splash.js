@@ -1,4 +1,5 @@
 import { LobbyClient } from 'boardgame.io/client';
+import { kickoffClient } from './game';
 
 const lobbyClient = new LobbyClient({ server: 'http://localhost:8080' });
 const playerName = "Phillip";
@@ -111,6 +112,7 @@ function joinMatch(event) {
 
 const toggleLobby = () => {
   $('#lobby').toggle();
+  kickoffClient();
 }
 
 const init = () => {

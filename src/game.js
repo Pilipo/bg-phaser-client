@@ -34,8 +34,6 @@ const bgClient = Client({
   multiplayer: SocketIO({ server: 'localhost:8000' }),
 });
 
-bgClient.start();
-
 const play = new Phaser.Scene('Play');
 let text;
 let pointer;
@@ -71,13 +69,19 @@ play.update = function () {
   ]);
 }
 
-new Phaser.Game({
-  type: Phaser.AUTO,
-  width: 1000,
-  height: 500,
-  scene: play,
-  backgroundColor: '#ffffff',
-});
+// TODO: turn this on when match starts
+// TODO: turn on when match starts
+export const kickoffClient = () => {
+  bgClient.start();
+
+  new Phaser.Game({
+    type: Phaser.AUTO,
+    width: 1000,
+    height: 500,
+    scene: play,
+    backgroundColor: '#ffffff',
+  });
+}
 
 function convertIndexToPoint(idx) {
   let returnValue = { x: null, y: null };
