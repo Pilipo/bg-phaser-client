@@ -67,8 +67,7 @@ function joinMatch() {
 }
 
 const toggleLobby = () => {
-  // $('#lobby').toggle();
-  
+  $('#lobby').toggle();
 }
 
 const init = () => {

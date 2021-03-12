@@ -69,12 +69,10 @@ export const kickoffClient = (matchID, playerID, playerCredentials) => {
   if (typeof playerID === 'undefined') throw new Error('playerID undefined');
 
   bgClient.matchID = matchID;
-  bgClient.credentials = playerCredentials;
-  bgClient.playerID = parseInt(playerID, 10);
-  // bgClient.debugOpt = false;
+  bgClient.debugOpt = false;
   bgClient.start();
+  bgClient.updatePlayerID(playerID);
   bgClient.updateCredentials(playerCredentials);
-
   new Phaser.Game({
     type: Phaser.AUTO,
     width: 1000,
