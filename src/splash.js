@@ -60,8 +60,6 @@ function joinMatch() {
   })
     .then((data) => {
       playerCreds = data.playerCredentials;
-      // localStorage.setItem('sg-playerCredentials', playerCreds);
-      // localStorage.setItem('sg-matchID', matchID);
       buildGameList();
       kickoffClient(matchID, playerID, playerCreds);
       toggleLobby();
@@ -69,7 +67,7 @@ function joinMatch() {
 }
 
 const toggleLobby = () => {
-  $('#lobby').toggle();
+  // $('#lobby').toggle();
   
 }
 

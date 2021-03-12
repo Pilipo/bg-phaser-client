@@ -51,7 +51,6 @@ play.create = function () {
   this.input.on('pointerup', function () {
     const idx = GH.convertPointToIndex({ x: pointer.x, y: pointer.y });
     bgClient.moves.clickCell(idx);
-    console.log(bgClient);
   })
 }
 
@@ -61,12 +60,7 @@ play.update = function () {
   text.setText([
     'x: ' + pointer.x,
     'y: ' + pointer.y,
-    'mid x: ' + pointer.midPoint.x,
-    'mid y: ' + pointer.midPoint.y,
-    'velocity x: ' + pointer.velocity.x,
-    'velocity y: ' + pointer.velocity.y,
-    'movementX: ' + pointer.movementX,
-    'movementY: ' + pointer.movementY
+    'playerID: ' + bgClient.playerID,
   ]);
 }
 
@@ -76,9 +70,10 @@ export const kickoffClient = (matchID, playerID, playerCredentials) => {
 
   bgClient.matchID = matchID;
   bgClient.credentials = playerCredentials;
-  bgClient.playerID = playerID;
-  bgClient.debugOpt = false;
+  bgClient.playerID = parseInt(playerID, 10);
+  // bgClient.debugOpt = false;
   bgClient.start();
+  bgClient.updateCredentials(playerCredentials);
 
   new Phaser.Game({
     type: Phaser.AUTO,
