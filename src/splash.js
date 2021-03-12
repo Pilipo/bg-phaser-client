@@ -1,5 +1,6 @@
 import { LobbyClient } from 'boardgame.io/client';
 import { kickoffClient } from './game';
+import DH from './helpers/domHelper';
 
 const lobbyClient = new LobbyClient({ server: 'http://localhost:8080' });
 const playerName = "Phillip";
@@ -10,59 +11,15 @@ const buildMatchList = (gameTitle) => {
 
   lobbyClient.listMatches(gameTitle)
     .then((data) => {
-      let returnString = '';
+      let domString = '';
       if (!data || data.matches.length === 0) {
-        returnString = `<div class="card">
-        <div class="card-body">
-          <h5 class="card-title"></h5>
-          <p class="card-text text-center"> ...no matches found.</p>
-        </div>
-      </div>`;
+        domString += DH.formatCard();
       } else {
-        data.matches.forEach((match, idx) => {
-          returnString += `
-        <div class="card col-md-3 col-sm-6 m-0">
-          <div class="card-body">
-            <h5 class="card-title">${match.gameName}</h5>
-            <p class="card-text text-center">${match.matchID}</p>
-            <hr />
-            <div>
-              <h5>Join</h5>
-              <button
-                type="button"
-                class="btn btn-primary btn-sm join-button"
-                data-matchID="${match.matchID}"
-                data-playerID="0"
-              >
-                <i class="fas fa-user-astronaut"></i> 1
-              </button>
-              <button
-                type="button"
-                class="btn btn-danger btn-sm join-button"
-                data-matchID="${match.matchID}"
-                data-playerID="1"
-              >
-                <i class="fas fa-user-astronaut"></i> 2
-              </button>
-              <hr />
-              <h5>Watch</h5>
-              <button
-                type="button"
-                class="btn btn-primary btn-sm join-button"
-                data-matchID="${match.matchID}"
-                data-playerID
-              >
-                <i class="fas fa-glasses"></i>
-              </button>
-            </div>
-          </div>
-        </div>  
-        `;
+        data.matches.forEach((match) => {
+          domString += DH.formatCard(match.gameName, match.matchID);
         });
       }
-
-      $('#matches-in-progress').html(returnString);
-
+      $('#matches-in-progress').html(domString);
     })
     .catch(console.error);
 }
@@ -72,15 +29,7 @@ const buildGameList = () => {
     .then((data) => {
       data.forEach((title) => {
         buildMatchList(title);
-        $('#start-buttons').html(`
-          <button
-            type="button"
-            class="btn btn-primary btn-sm m-2 start-match"
-            data-gameTitle="${title}"
-          >Start a New ${title} Match 
-          <i class="fas fa-gamepad"></i>
-          </button>
-        `)
+        $('#start-buttons').html(DH.formatMatchButtons(title))
       })
     });
 };
@@ -106,18 +55,17 @@ function joinMatch(event) {
     .then((data) => {
       playerCreds = data.playerCredentials;
       buildGameList();
-      toggleLobby();
+      kickoffGame(playerID);
     })
 }
 
-const toggleLobby = () => {
+const kickoffGame = () => {
   $('#lobby').toggle();
   kickoffClient();
 }
 
 const init = () => {
   buildGameList();
-  // $('.start-match').click(createMatch)
   $('body').on('click', 'button.start-match', createMatch);
   $('body').on('click', 'button.join-button', joinMatch);
 }
