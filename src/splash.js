@@ -32,8 +32,15 @@ const buildGameList = () => {
         buildMatchList(title);
         $('#start-buttons').html(DH.formatMatchButtons(title))
       })
+    })
+    .catch((err) => {
+      $('#matches-in-progress').html(DH.formatServerError('Server failed to connect'));
     });
 };
+
+const showConnectionFailed = () => {
+
+}
 
 function createMatch() {
   const btn = $(this);
