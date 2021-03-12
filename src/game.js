@@ -69,9 +69,8 @@ play.update = function () {
   ]);
 }
 
-// TODO: turn this on when match starts
-// TODO: turn on when match starts
-export const kickoffClient = () => {
+export const kickoffClient = (playerID) => {
+  bgClient.playerID = playerID;
   bgClient.start();
 
   new Phaser.Game({
