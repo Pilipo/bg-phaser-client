@@ -66,12 +66,23 @@ const buildGameList = () => {
     .then((data) => {
       data.forEach((title) => {
         buildMatchList(title);
+        $('#start-buttons').html(`
+          <button
+            type="button"
+            class="btn btn-primary btn-sm m-2 start-match"
+            data-gameTitle="${title}"
+          >Start a New ${title} Match 
+          <i class="fas fa-gamepad"></i>
+          </button>
+        `)
       })
     });
 };
 
-const createMatch = () => {
-  lobbyClient.createMatch('default', {
+function createMatch (event) {
+  const btn = $(this);
+  const gameTitle = btn.attr('data-gameTitle');
+  lobbyClient.createMatch(gameTitle, {
     numPlayers: 2
   });
   buildGameList();
@@ -88,17 +99,23 @@ function joinMatch (event) {
   })
     .then((data) => {
       playerCreds = data.playerCredentials;
+      buildGameList();
+      toggleLobby();
     })
+}
+
+const toggleLobby = () => {
+  $('#lobby').toggle();
 }
 
 const init = () => {
   buildGameList();
-  $('#start-match').click(createMatch)
+  // $('.start-match').click(createMatch)
+  $('body').on('click', 'button.start-match', createMatch);
   $('body').on('click', 'button.join-button', joinMatch);
 }
 
 init();
 
-// TODO: joinMatch
 // TODO: leaveMatch
 // TODO: playAgain

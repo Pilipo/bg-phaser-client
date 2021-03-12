@@ -4,6 +4,7 @@ import { SocketIO } from 'boardgame.io/multiplayer';
 import { INVALID_MOVE } from 'boardgame.io/core';
 
 const TTT = {
+  name: 'TicTacToe',
   setup: () => ({
     cells: Array(9).fill(null),
   }),
