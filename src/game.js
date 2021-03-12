@@ -70,6 +70,8 @@ play.update = function () {
 }
 
 export const kickoffClient = (playerID) => {
+  if (typeof playerID === 'undefined') throw new Error('playerID undefined');
+
   bgClient.playerID = playerID;
   bgClient.start();
 

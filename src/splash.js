@@ -34,7 +34,7 @@ const buildGameList = () => {
     });
 };
 
-function createMatch(event) {
+function createMatch() {
   const btn = $(this);
   const gameTitle = btn.attr('data-gameTitle');
   lobbyClient.createMatch(gameTitle, {
@@ -43,7 +43,7 @@ function createMatch(event) {
   buildGameList();
 }
 
-function joinMatch(event) {
+function joinMatch() {
   if (playerCreds !== null) return;
   const btn = $(this);
   const matchID = btn.attr('data-matchID');
@@ -59,9 +59,9 @@ function joinMatch(event) {
     })
 }
 
-const kickoffGame = () => {
+const kickoffGame = (playerID) => {
   $('#lobby').toggle();
-  kickoffClient();
+  kickoffClient(playerID);
 }
 
 const init = () => {
@@ -72,5 +72,6 @@ const init = () => {
 
 init();
 
+// TODO: rejoinMatch
 // TODO: leaveMatch
 // TODO: playAgain
