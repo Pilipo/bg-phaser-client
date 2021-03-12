@@ -72,6 +72,7 @@ const init = () => {
 
 init();
 
+// TODO: fix spectator mode
 // TODO: rejoinMatch
 // TODO: leaveMatch
 // TODO: playAgain
