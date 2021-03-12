@@ -16,8 +16,10 @@ const formatCard = (match) => {
     returnString = `
     <div class="col-md-3 col-sm-6">
       <div class="card">
-        <div class="card-body">
+        <div class="card-header bg-secondary text-light">
           <h5 class="card-title">${gameName}</h5>
+        </div>
+        <div class="card-body">
           <p class="card-text text-center">${matchID}</p>
           <hr />
           <div>

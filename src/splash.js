@@ -38,10 +38,6 @@ const buildGameList = () => {
     });
 };
 
-const showConnectionFailed = () => {
-
-}
-
 function createMatch() {
   const btn = $(this);
   const gameTitle = btn.attr('data-gameTitle');
@@ -67,7 +63,7 @@ function joinMatch() {
       // localStorage.setItem('sg-playerCredentials', playerCreds);
       // localStorage.setItem('sg-matchID', matchID);
       buildGameList();
-      kickoffClient(playerID, playerCreds);
+      kickoffClient(matchID, playerID, playerCreds);
       toggleLobby();
     })
 }

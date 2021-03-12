@@ -51,6 +51,7 @@ play.create = function () {
   this.input.on('pointerup', function () {
     const idx = GH.convertPointToIndex({ x: pointer.x, y: pointer.y });
     bgClient.moves.clickCell(idx);
+    console.log(bgClient);
   })
 }
 
@@ -69,11 +70,14 @@ play.update = function () {
   ]);
 }
 
-export const kickoffClient = (playerID, playerCredentials) => {
+export const kickoffClient = (matchID, playerID, playerCredentials) => {
+  if (typeof matchID === 'undefined') throw new Error('matchID undefined');
   if (typeof playerID === 'undefined') throw new Error('playerID undefined');
 
+  bgClient.matchID = matchID;
   bgClient.credentials = playerCredentials;
   bgClient.playerID = playerID;
+  bgClient.debugOpt = false;
   bgClient.start();
 
   new Phaser.Game({
